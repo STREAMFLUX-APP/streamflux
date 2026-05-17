@@ -1,0 +1,402 @@
+import { useState } from "react";
+
+const G = {
+bg: "#0a0c0f", card: "#13161b", border: "#1e2330",
+blue: "#3B7DD8", blueDim: "#1e3a6a", text: "#e8eaf0",
+muted: "#6b7280", green: "#3d9e5c",
+};
+
+const CLIENT_TYPES = [
+{ value: "buyer_active", label: "🔥 Active Buyer", desc: "Looking now, ready to move" },
+{ value: "buyer_passive", label: "👀 Passive Buyer", desc: "Interested but not urgent" },
+{ value: "seller_motivated", label: "⚡ Motivated Seller", desc: "Wants to sell fast" },
+{ value: "seller_exploring", label: "🤔 Exploring Seller", desc: "Considering selling" },
+{ value: "investor", label: "💰 Investor", desc: "Looking for ROI opportunity" },
+{ value: "cold_lead", label: "❄️ Cold Lead", desc: "No prior contact" },
+];
+
+const CONTACT_REASONS = [
+{ value: "new_listing", label: "New Listing Match", desc: "Property matches their criteria" },
+{ value: "price_drop", label: "Price Reduction", desc: "Property they liked dropped in price" },
+{ value: "first_contact", label: "First Outreach", desc: "Never contacted them before" },
+{ value: "reconnect", label: "Reconnecting", desc: "Haven't spoken in a while" },
+{ value: "open_house", label: "Open House Invite", desc: "Invite to view a property" },
+{ value: "market_update", label: "Market Update", desc: "Sharing market news relevant to them" },
+{ value: "off_market", label: "Off-Market Deal", desc: "Exclusive property not listed publicly" },
+{ value: "just_sold", label: "Just Sold Nearby", desc: "Sold a similar property nearby" },
+];
+
+const BUYER_CRITERIA = [
+"Under $500K","$500K–$1M","$1M–$2M","$2M–$5M","$5M+",
+"1 Bedroom","2 Bedrooms","3 Bedrooms","4+ Bedrooms",
+"House","Apartment","Condo","Villa","Townhouse",
+"Pool Wanted","Garden Wanted","Garage Wanted","Sea View Wanted","City Center","Quiet Area",
+"Good Schools Nearby","Pet Friendly","Investment Purpose","Primary Residence",
+];
+
+const SELLER_SITUATION = [
+"Wants Quick Sale","Flexible on Timeline","Needs Top Dollar","Downsizing","Upsizing",
+"Relocating","Divorce Settlement","Inherited Property","Investment Property Sale",
+"Already Found New Home","Testing the Market",
+];
+
+const URGENCY = [
+{ value: "high", label: "🔥 High Urgency", desc: "Must act now" },
+{ value: "medium", label: "⏳ Medium Urgency", desc: "Within 1-3 months" },
+{ value: "low", label: "🌱 Low Urgency", desc: "No rush, building relationship" },
+];
+
+const TABS = [
+{ id: "messages", label: "💬 WhatsApp & SMS" },
+{ id: "voice", label: "🎙️ Voice Script" },
+{ id: "email", label: "📧 Email" },
+{ id: "letter", label: "✉️ Formal Letter" },
+{ id: "followups", label: "🔄 Follow-Ups" },
+];
+
+function Field({ label, hint, value, onChange, placeholder, type = "text" }) {
+return (
+<div style={{ marginBottom: 18 }}>
+<label style={{ display: "block", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: G.muted, textTransform: "uppercase", marginBottom: 4 }}>{label}</label>
+{hint && <p style={{ fontSize: 12, color: "#4b5563", margin: "0 0 6px", fontStyle: "italic" }}>{hint}</p>}
+<input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
+style={{ width: "100%", background: "#0d1017", border: `1px solid ${G.border}`, borderRadius: 8, color: G.text, fontSize: 14, padding: "11px 14px", outline: "none", boxSizing: "border-box", fontFamily: "inherit" }} />
+</div>
+);
+}
+
+function ChipSelect({ label, hint, options, selected, onToggle, single = false }) {
+return (
+<div style={{ marginBottom: 22 }}>
+<label style={{ display: "block", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: G.muted, textTransform: "uppercase", marginBottom: 4 }}>{label}</label>
+{hint && <p style={{ fontSize: 12, color: "#4b5563", margin: "0 0 8px", fontStyle: "italic" }}>{hint}</p>}
+<div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
+{options.map(opt => {
+const val = typeof opt === "string" ? opt : opt.value;
+const lbl = typeof opt === "string" ? opt : opt.label;
+const sub = typeof opt === "object" ? opt.desc : null;
+const active = single ? selected === val : selected.includes(val);
+return (
+<button key={val} onClick={() => onToggle(val)} style={{
+background: active ? "#1a2a1a" : "#0d1017", border: `1px solid ${active ? G.green : G.border}`,
+borderRadius: 7, color: active ? "#6ee7a0" : "#9ca3af", fontSize: 12,
+padding: sub ? "9px 13px" : "7px 12px", cursor: "pointer", fontFamily: "inherit", textAlign: "left",
+}}>
+<div style={{ fontWeight: active ? 700 : 400 }}>{lbl}</div>
+{sub && <div style={{ fontSize: 11, color: active ? "#4ade80" : G.muted, marginTop: 2 }}>{sub}</div>}
+</button>
+);
+})}
+</div>
+</div>
+);
+}
+
+function OutputCard({ title, content, icon, badge }) {
+const [copied, setCopied] = useState(false);
+return (
+<div style={{ background: "#0d1017", border: `1px solid ${G.border}`, borderRadius: 10, padding: "16px 18px", marginBottom: 14 }}>
+<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+<div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+<span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: G.blue, textTransform: "uppercase" }}>{icon} {title}</span>
+{badge && <span style={{ fontSize: 10, background: "#1a2a3a", color: "#60a5fa", border: "1px solid #1e3a5a", borderRadius: 4, padding: "2px 7px" }}>{badge}</span>}
+</div>
+<button onClick={() => { navigator.clipboard.writeText(content); setCopied(true); setTimeout(() => setCopied(false), 1800); }}
+style={{ background: copied ? "#1a3a1a" : "#13161b", border: `1px solid ${copied ? "#2a5a2a" : G.border}`, borderRadius: 6, color: copied ? "#4caf50" : "#9ca3af", fontSize: 11, padding: "4px 12px", cursor: "pointer", fontFamily: "inherit", flexShrink: 0 }}>
+{copied ? "✓ Copied" : "Copy"}
+</button>
+</div>
+<p style={{ color: "#d1d5db", fontSize: 14, lineHeight: 1.75, margin: 0, whiteSpace: "pre-wrap" }}>{content}</p>
+</div>
+);
+}
+
+const callClaude = async (apiKey, prompt, maxTokens = 1200) => {
+const res = await fetch("https://api.anthropic.com/v1/messages", {
+method: "POST",
+headers: { "Content-Type": "application/json", "x-api-key": apiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
+body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: maxTokens, messages: [{ role: "user", content: prompt }] }),
+});
+if (!res.ok) { const e = await res.json(); throw new Error(e?.error?.message || `API error ${res.status}`); }
+const data = await res.json();
+if (data.error) throw new Error(data.error.message);
+const text = data.content.map(i => i.type === "text" ? i.text : "").join("").trim();
+try { return JSON.parse(text); } catch {}
+const cm = text.match(/```(?:json)?\s*([\s\S]*?)```/);
+if (cm) { try { return JSON.parse(cm[1].trim()); } catch {} }
+const jm = text.match(/\{[\s\S]*\}/);
+if (jm) { try { return JSON.parse(jm[0]); } catch {} }
+throw new Error("Could not read AI response — please try again.");
+};
+
+export default function App() {
+const [screen, setScreen] = useState("key");
+const [apiKey, setApiKey] = useState("");
+const [loading, setLoading] = useState(false);
+const [loadingMsg, setLoadingMsg] = useState("");
+const [result, setResult] = useState(null);
+const [error, setError] = useState("");
+const [activeTab, setActiveTab] = useState("messages");
+
+// Client info
+const [clientName, setClientName] = useState("");
+const [clientType, setClientType] = useState("");
+const [contactReason, setContactReason] = useState("");
+const [urgency, setUrgency] = useState("");
+
+// Property being offered
+const [propAddress, setPropAddress] = useState("");
+const [propPrice, setPropPrice] = useState("");
+const [propType, setPropType] = useState("");
+const [propHighlights, setPropHighlights] = useState("");
+
+// Buyer or seller specific
+const [buyerCriteria, setBuyerCriteria] = useState([]);
+const [sellerSituation, setSellerSituation] = useState([]);
+const [priorContact, setPriorContact] = useState("");
+const [personalNote, setPersonalNote] = useState("");
+
+// Agent
+const [agentName, setAgentName] = useState("");
+const [agentPhone, setAgentPhone] = useState("");
+const [agencyName, setAgencyName] = useState("");
+
+const isBuyer = clientType.includes("buyer") || clientType === "investor";
+const isSeller = clientType.includes("seller");
+
+const canGenerate = clientName && clientType && contactReason && agentName;
+
+const ctx = `
+CLIENT:
+- Name: ${clientName}
+- Type: ${CLIENT_TYPES.find(t => t.value === clientType)?.label || clientType}
+- Reason for contact: ${CONTACT_REASONS.find(r => r.value === contactReason)?.label || contactReason}
+- Urgency: ${URGENCY.find(u => u.value === urgency)?.label || "not specified"}
+- Prior contact history: ${priorContact || "none specified"}
+- Personal note about client: ${personalNote || "none"}
+
+PROPERTY BEING OFFERED:
+- Address: ${propAddress || "not specified"}
+- Price: ${propPrice ? "$" + propPrice : "not specified"}
+- Type: ${propType || "not specified"}
+- Key highlights: ${propHighlights || "not specified"}
+
+${isBuyer ? `BUYER CRITERIA: ${buyerCriteria.join(", ") || "not specified"}` : ""}
+${isSeller ? `SELLER SITUATION: ${sellerSituation.join(", ") || "not specified"}` : ""}
+
+AGENT:
+- Name: ${agentName}
+- Phone: ${agentPhone || "N/A"}
+- Agency: ${agencyName || "N/A"}`.trim();
+
+const generate = async () => {
+setError(""); setLoading(true); setResult(null);
+try {
+setLoadingMsg("✦ Writing messages & voice script...");
+const part1 = await callClaude(apiKey, `You are an elite real estate sales coach. Write highly personalised outreach messages for this agent to send to their client.
+
+${ctx}
+
+Return ONLY raw JSON — no markdown, no explanation:
+{
+"whatsapp": "WhatsApp message. 60-80 words. Warm, personal, use the client's first name. Reference their specific situation. Create interest without being pushy. End with one easy question to get a reply.",
+"sms": "SMS message. Max 160 characters. Punchy and personal. Must fit in one text. Use client's first name. Clear CTA.",
+"voice_script": "Phone call script. Format as: OPENING (greet by name, introduce yourself warmly, 2 sentences), REASON FOR CALL (why you are calling specifically, 2-3 sentences), VALUE PITCH (what is in it for them, 2-3 sentences), CLOSE (ask for a specific next step — viewing, call, meeting, 1-2 sentences). Label each section clearly. Natural spoken language. No stiff corporate words.",
+"email_subject": "Email subject line. Personal and curiosity-driving. Include client name if possible. Under 10 words.",
+"email_body": "Full email. 130-160 words. Personal opener referencing their situation. Middle section on the opportunity. Clear CTA. Professional but warm. Signed by ${agentName}${agencyName ? " from " + agencyName : ""}."
+}`, 1300);
+
+setLoadingMsg("✦ Writing formal letter & follow-ups...");
+const part2 = await callClaude(apiKey, `You are an elite real estate sales coach. Write a formal letter and follow-up sequence for this agent.
+
+${ctx}
+
+Return ONLY raw JSON — no markdown, no explanation:
+{
+"formal_letter": "Full formal printed letter. Format: [Date] blank line, ${clientName} blank line, [Client Address] blank line, Dear ${clientName}, then 4 paragraphs: (1) personal opening and reason for writing, (2) describe the property or opportunity specifically for their situation, (3) explain why this is the right moment for them, (4) warm close with clear next step. Sign off: Warm regards, blank line, ${agentName}${agencyName ? ", " + agencyName : ""}${agentPhone ? ", " + agentPhone : ""}. Total 260-300 words. Professional, warm, persuasive.",
+"followup_1": "Follow-up WhatsApp or SMS. 3 days after no reply. 50-60 words. Friendly nudge. Different angle from first message. Easy question at end.",
+"followup_2": "Follow-up WhatsApp or SMS. 1 week after no reply. 50-60 words. Add a new piece of information or urgency. Mention market activity or other interest.",
+"followup_3": "Follow-up WhatsApp or SMS. 2 weeks after no reply. 40-50 words. Very casual check-in. Ask if situation has changed. Keep the door open.",
+"followup_4": "Follow-up WhatsApp or SMS. 1 month after no reply. 40-50 words. Final warm touch. Mention you have other options too. No pressure. Just keeping in touch."
+}`, 1400);
+
+setResult({ ...part1, ...part2 });
+setActiveTab("messages");
+} catch (err) {
+setError("Error: " + err.message);
+}
+setLoading(false); setLoadingMsg("");
+};
+
+const s = { fontFamily: "'Georgia', serif", minHeight: "100vh", background: G.bg, color: G.text };
+const card = { background: G.card, border: `1px solid ${G.border}`, borderRadius: 14, padding: "24px", marginBottom: 18 };
+const btnP = (dis) => ({ background: dis ? "#1a1f2e" : G.blue, color: dis ? G.muted : "#fff", border: "none", borderRadius: 10, padding: "14px 24px", fontSize: 14, fontWeight: 700, fontFamily: "inherit", cursor: dis ? "not-allowed" : "pointer" });
+const btnS = { background: "transparent", color: G.muted, border: `1px solid ${G.border}`, borderRadius: 10, padding: "14px 24px", fontSize: 14, fontFamily: "inherit", cursor: "pointer" };
+
+if (screen === "key") return (
+<div style={s}>
+<div style={{ maxWidth: 460, margin: "0 auto", padding: "60px 24px" }}>
+<div style={{ textAlign: "center", marginBottom: 32 }}>
+<div style={{ fontSize: 42, marginBottom: 10 }}>🤝</div>
+<h1 style={{ fontSize: 24, fontWeight: 700, margin: "0 0 6px" }}>ClientAI — Outreach Machine</h1>
+<p style={{ color: G.muted, fontSize: 13, margin: 0 }}>Generate personalised messages for any buyer or seller in seconds</p>
+</div>
+<div style={card}>
+<label style={{ display: "block", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: G.muted, textTransform: "uppercase", marginBottom: 6 }}>Claude API Key</label>
+<input type="password" value={apiKey} onChange={e => { setApiKey(e.target.value); setError(""); }} placeholder="sk-ant-..."
+style={{ width: "100%", background: "#0d1017", border: `1px solid ${G.border}`, borderRadius: 8, color: G.text, fontSize: 14, padding: "11px 14px", outline: "none", boxSizing: "border-box", fontFamily: "inherit", marginBottom: 10 }} />
+<p style={{ color: G.muted, fontSize: 12, margin: "0 0 18px" }}>Get yours free at <span style={{ color: G.blue }}>console.anthropic.com</span> → API Keys</p>
+<button onClick={() => apiKey.length > 10 ? (setError(""), setScreen("form")) : setError("Enter your API key first.")} style={{ ...btnP(false), width: "100%" }}>Get Started →</button>
+{error && <p style={{ color: "#f87171", fontSize: 12, marginTop: 10, fontFamily: "monospace" }}>⚠ {error}</p>}
+</div>
+</div>
+</div>
+);
+
+if (result) return (
+<div style={s}>
+<div style={{ borderBottom: `1px solid ${G.border}`, padding: "16px 22px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+<span style={{ fontSize: 16, fontWeight: 700 }}>🤝 Outreach Package for {clientName}</span>
+<button onClick={() => { setResult(null); setError(""); }} style={{ ...btnS, padding: "7px 14px", fontSize: 12 }}>← New Client</button>
+</div>
+<div style={{ maxWidth: 720, margin: "0 auto", padding: "24px 18px 60px" }}>
+<h2 style={{ margin: "0 0 4px", fontSize: 17, fontWeight: 700 }}>✅ Full Outreach Package Ready</h2>
+<p style={{ color: G.muted, fontSize: 13, margin: "0 0 20px" }}>Every message personalised for {clientName}. Tap Copy and send.</p>
+<div style={{ display: "flex", gap: 7, marginBottom: 22, flexWrap: "wrap" }}>
+{TABS.map(tab => (
+<button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
+background: activeTab === tab.id ? G.blue : "#0d1017", color: activeTab === tab.id ? "#fff" : G.muted,
+border: `1px solid ${activeTab === tab.id ? G.blue : G.border}`, borderRadius: 8, padding: "8px 14px",
+fontSize: 12, fontWeight: activeTab === tab.id ? 700 : 400, fontFamily: "inherit", cursor: "pointer",
+}}>{tab.label}</button>
+))}
+</div>
+
+{activeTab === "messages" && <>
+<OutputCard title="WhatsApp Message" icon="💬" badge="WhatsApp" content={result.whatsapp} />
+<OutputCard title="SMS Message" icon="📱" badge="SMS / 160 chars" content={result.sms} />
+</>}
+{activeTab === "voice" && <>
+<p style={{ color: G.muted, fontSize: 13, margin: "0 0 14px" }}>Read this naturally — don't sound like you're reading a script.</p>
+<OutputCard title="Phone Call Script" icon="🎙️" content={result.voice_script} />
+</>}
+{activeTab === "email" && <>
+<OutputCard title="Email Subject Line" icon="📧" content={result.email_subject} />
+<OutputCard title="Email Body" icon="📨" content={result.email_body} />
+</>}
+{activeTab === "letter" && <>
+<p style={{ color: G.muted, fontSize: 13, margin: "0 0 14px" }}>Replace anything in brackets before printing and sending.</p>
+<OutputCard title="Formal Letter" icon="✉️" content={result.formal_letter} />
+</>}
+{activeTab === "followups" && <>
+<p style={{ color: G.muted, fontSize: 13, margin: "0 0 14px" }}>Send these in order if no reply. Works on WhatsApp and SMS.</p>
+<OutputCard title="Follow-Up #1" icon="💬" badge="Day 3" content={result.followup_1} />
+<OutputCard title="Follow-Up #2" icon="💬" badge="Week 1" content={result.followup_2} />
+<OutputCard title="Follow-Up #3" icon="💬" badge="Week 2" content={result.followup_3} />
+<OutputCard title="Follow-Up #4" icon="💬" badge="Month 1" content={result.followup_4} />
+</>}
+</div>
+</div>
+);
+
+return (
+<div style={s}>
+<div style={{ borderBottom: `1px solid ${G.border}`, padding: "16px 24px", display: "flex", alignItems: "center", gap: 10 }}>
+<span style={{ fontSize: 16, fontWeight: 700 }}>🤝 Client Outreach Machine</span>
+</div>
+<div style={{ maxWidth: 660, margin: "0 auto", padding: "30px 20px 60px" }}>
+
+{/* SECTION 1 — Client Info */}
+<div style={card}>
+<h2 style={{ margin: "0 0 4px", fontSize: 17, fontWeight: 700 }}>👤 Who Are You Contacting?</h2>
+<p style={{ color: G.muted, fontSize: 13, margin: "0 0 20px" }}>Tell us about this client. The more detail, the more personalised the messages.</p>
+<div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+<Field label="Client First Name" value={clientName} onChange={setClientName} placeholder="Sarah" />
+<Field label="Client Last Name (optional)" value={""} onChange={() => {}} placeholder="Johnson" />
+</div>
+<ChipSelect label="Client Type" hint="Who is this person?" options={CLIENT_TYPES} selected={clientType} onToggle={setClientType} single />
+<ChipSelect label="Reason for Contacting" hint="Why are you reaching out right now?" options={CONTACT_REASONS} selected={contactReason} onToggle={setContactReason} single />
+<ChipSelect label="Urgency Level" options={URGENCY} selected={urgency} onToggle={setUrgency} single />
+</div>
+
+{/* SECTION 2 — Property Details */}
+<div style={card}>
+<h2 style={{ margin: "0 0 4px", fontSize: 17, fontWeight: 700 }}>🏠 Property You're Offering</h2>
+<p style={{ color: G.muted, fontSize: 13, margin: "0 0 20px" }}>If you're reaching out about a specific property, fill this in. Leave blank if it's a general outreach.</p>
+<Field label="Property Address" value={propAddress} onChange={setPropAddress} placeholder="42 Palm Drive, Miami Beach, FL 33139" />
+<div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+<Field label="Asking Price ($)" value={propPrice} onChange={setPropPrice} placeholder="1,100,000" />
+<Field label="Property Type" value={propType} onChange={setPropType} placeholder="4-bed villa with pool" />
+</div>
+<div style={{ marginBottom: 18 }}>
+<label style={{ display: "block", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: G.muted, textTransform: "uppercase", marginBottom: 4 }}>Key Highlights</label>
+<p style={{ fontSize: 12, color: "#4b5563", margin: "0 0 6px", fontStyle: "italic" }}>The top 2-3 things that make this property perfect for this client specifically.</p>
+<textarea value={propHighlights} onChange={e => setPropHighlights(e.target.value)} rows={2}
+placeholder="e.g. Ocean views, private pool, walking distance to their kids' school, just reduced by $50K"
+style={{ width: "100%", background: "#0d1017", border: `1px solid ${G.border}`, borderRadius: 8, color: G.text, fontSize: 14, padding: "11px 14px", outline: "none", boxSizing: "border-box", fontFamily: "inherit", resize: "vertical" }} />
+</div>
+</div>
+
+{/* SECTION 3 — Buyer or Seller Specific */}
+{(isBuyer || clientType === "investor") && (
+<div style={card}>
+<h2 style={{ margin: "0 0 4px", fontSize: 17, fontWeight: 700 }}>🔍 Buyer Criteria</h2>
+<p style={{ color: G.muted, fontSize: 13, margin: "0 0 20px" }}>What is this buyer looking for? Select all that apply.</p>
+<ChipSelect label="Their Requirements" options={BUYER_CRITERIA} selected={buyerCriteria} onToggle={(v) => { setBuyerCriteria(prev => prev.includes(v) ? prev.filter(x => x !== v) : [...prev, v]); }} />
+</div>
+)}
+
+{isSeller && (
+<div style={card}>
+<h2 style={{ margin: "0 0 4px", fontSize: 17, fontWeight: 700 }}>🏷️ Seller Situation</h2>
+<p style={{ color: G.muted, fontSize: 13, margin: "0 0 20px" }}>What's their situation? This makes the outreach far more relevant.</p>
+<ChipSelect label="Their Situation" options={SELLER_SITUATION} selected={sellerSituation} onToggle={(v) => { setSellerSituation(prev => prev.includes(v) ? prev.filter(x => x !== v) : [...prev, v]); }} />
+</div>
+)}
+
+{/* SECTION 4 — Personal Context */}
+<div style={card}>
+<h2 style={{ margin: "0 0 4px", fontSize: 17, fontWeight: 700 }}>💡 Personal Context</h2>
+<p style={{ color: G.muted, fontSize: 13, margin: "0 0 20px" }}>Any personal details that will make the message feel more human.</p>
+<div style={{ marginBottom: 18 }}>
+<label style={{ display: "block", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: G.muted, textTransform: "uppercase", marginBottom: 4 }}>Prior Contact History</label>
+<p style={{ fontSize: 12, color: "#4b5563", margin: "0 0 6px", fontStyle: "italic" }}>Have you spoken before? What did they say?</p>
+<textarea value={priorContact} onChange={e => setPriorContact(e.target.value)} rows={2}
+placeholder="e.g. Met at open house 2 weeks ago. Said they loved the area but wanted more bedrooms. Budget is flexible."
+style={{ width: "100%", background: "#0d1017", border: `1px solid ${G.border}`, borderRadius: 8, color: G.text, fontSize: 14, padding: "11px 14px", outline: "none", boxSizing: "border-box", fontFamily: "inherit", resize: "vertical" }} />
+</div>
+<div>
+<label style={{ display: "block", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: G.muted, textTransform: "uppercase", marginBottom: 4 }}>Personal Note</label>
+<p style={{ fontSize: 12, color: "#4b5563", margin: "0 0 6px", fontStyle: "italic" }}>Anything personal you know — kids, job, lifestyle — makes messages feel real.</p>
+<textarea value={personalNote} onChange={e => setPersonalNote(e.target.value)} rows={2}
+placeholder="e.g. Has 2 young kids, works from home, loves outdoor entertaining, moving from NYC"
+style={{ width: "100%", background: "#0d1017", border: `1px solid ${G.border}`, borderRadius: 8, color: G.text, fontSize: 14, padding: "11px 14px", outline: "none", boxSizing: "border-box", fontFamily: "inherit", resize: "vertical" }} />
+</div>
+</div>
+
+{/* SECTION 5 — Agent Info */}
+<div style={card}>
+<h2 style={{ margin: "0 0 4px", fontSize: 17, fontWeight: 700 }}>🏷️ Your Details</h2>
+<p style={{ color: G.muted, fontSize: 13, margin: "0 0 20px" }}>Used in sign-offs, letters and the voice script.</p>
+<div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+<Field label="Your Name" value={agentName} onChange={setAgentName} placeholder="James Rivera" />
+<Field label="Your Phone" value={agentPhone} onChange={setAgentPhone} placeholder="+1 305 555 0199" />
+</div>
+<Field label="Agency / Company Name" value={agencyName} onChange={setAgencyName} placeholder="Rivera Real Estate Group" />
+</div>
+
+{error && <div style={{ background: "#1a0a0a", border: "1px solid #3a1a1a", borderRadius: 8, padding: "12px 16px", color: "#f87171", fontSize: 13, marginBottom: 16, fontFamily: "monospace" }}>⚠ {error}</div>}
+
+{loading && <div style={{ background: "#13161b", border: `1px solid ${G.border}`, borderRadius: 10, padding: "18px 22px", marginBottom: 16, textAlign: "center" }}>
+<p style={{ color: G.blue, fontSize: 14, margin: 0, fontWeight: 600 }}>{loadingMsg}</p>
+<p style={{ color: G.muted, fontSize: 12, margin: "6px 0 0" }}>Takes about 15-20 seconds. Please wait...</p>
+</div>}
+
+<button onClick={() => canGenerate && !loading && generate()} disabled={loading || !canGenerate} style={{ ...btnP(!canGenerate || loading), width: "100%", fontSize: 15 }}>
+{loading ? "Generating..." : "✦ Generate Full Outreach Package"}
+</button>
+{!canGenerate && <p style={{ color: G.muted, fontSize: 12, marginTop: 8, textAlign: "center" }}>Fill in client name, client type, contact reason and your name to continue.</p>}
+</div>
+</div>
+);
+}
