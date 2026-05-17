@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Streamflux — Market Faster. Close More. Powered by AI.</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+--navy: #111827;
+--navy-mid: #122840;
+--blue: #1A6FA8;
+--aqua: #2AB8D4;
+--aqua-light: #5DCFE0;
+--white: #FFFFFF;
+--off-white: #F4F8FB;
+--text: #0D1B2A;
+--muted: #5A7A96;
+--border: rgba(42, 184, 212, 0.2);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+font-family: 'DM Sans', sans-serif;
+background: var(--white);
+color: var(--text);
+overflow-x: hidden;
+}
+
+.video-end-screen {
+position: absolute;
+top: 0; left: 0; right: 0; bottom: 0;
+background: rgba(10, 20, 35, 0.92);
+display: flex;
+align-items: center;
+justify-content: center;
+border-radius: 10px;
+opacity: 0;
+pointer-events: none;
+transition: opacity 0.5s ease;
+}
+.video-end-screen.visible {
+opacity: 1;
+pointer-events: all;
+}
+.video-end-content { text-align: center; }
+.video-end-label {
+font-family: 'DM Serif Display', serif;
+font-size: 22px;
+font-style: italic;
+color: rgba(255,255,255,0.8);
+margin-bottom: 20px;
+}
+.video-end-btn {
+background: var(--aqua);
+color: var(--navy);
+border: none;
+border-radius: 6px;
+padding: 16px 36px;
+font-size: 15px;
+font-weight: 700;
+font-family: 'DM Sans', sans-serif;
+cursor: pointer;
+letter-spacing: 0.5px;
+transition: all 0.2s;
+box-shadow: 0 0 40px rgba(42,184,212,0.4);
+}
+.video-end-btn:hover {
+background: var(--aqua-light);
+transform: translateY(-2px);
+}
+
+/* ── HERO VIDEO ── */
+.hero-video-wrap {
+width: 100%;
+max-width: 680px;
+margin-bottom: 40px;
+border-radius: 10px;
+overflow: hidden;
+border: 1px solid rgba(42,184,212,0.3);
+box-shadow: 0 0 60px rgba(42,184,212,0.15);
+}
+.hero-video-inner {
+position: relative;
+width: 100%;
+padding-top: 56.25%;
+}
+.hero-video-inner iframe,
+.hero-video-inner video {
+position: absolute;
+top: 0; left: 0;
+width: 100%; height: 100%;
+border-radius: 10px;
+}
+.video-placeholder {
+position: absolute;
+top: 0; left: 0; right: 0; bottom: 0;
+background: rgba(255,255,255,0.04);
+border-radius: 10px;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+gap: 12px;
+border: 2px dashed rgba(42,184,212,0.3);
+}
+.play-btn {
+width: 64px;
+height: 64px;
+border-radius: 50%;
+background: var(--aqua);
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 22px;
+color: var(--navy);
+padding-left: 4px;
+}
+.video-placeholder-text {
+font-family: 'DM Serif Display', serif;
+font-size: 18px;
+color: rgba(255,255,255,0.7);
+}
+.video-placeholder-sub {
+font-size: 12px;
+color: rgba(255,255,255,0.3);
+text-align: center;
+max-width: 300px;
+line-height: 1.6;
+}
+
+/* ── NAVIGATION ── */
+nav {
+position: fixed;
+top: 0; left: 0; right: 0;
+z-index: 100;
+padding: 20px 48px;
+display: flex;
+align-items: center;
+justify-content: space-between;
+background: rgba(255,255,255,0.92);
+backdrop-filter: blur(12px);
+border-bottom: 1px solid rgba(42,184,212,0.15);
+gap: 20px;
+}
+
+.nav-logo {
+font-family: 'Bebas Neue', sans-serif;
+font-size: 28px;
+letter-spacing: 3px;
+color: var(--navy);
+text-decoration: none;
+flex-shrink: 0;
+}
+.nav-logo span { color: var(--aqua); }
+
+.nav-links { display: flex; gap: 36px; align-items: center; }
+.nav-links a {
+font-size: 13px;
+font-weight: 500;
+letter-spacing: 0.5px;
+color: var(--muted);
+text-decoration: none;
+transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--navy); }
+
+.nav-cta {
+background: var(--aqua) !important;
+color: var(--white) !important;
+padding: 10px 24px !important;
+border-radius: 4px !important;
+font-weight: 500 !important;
+letter-spacing: 0.5px !important;
+transition: background 0.2s !important;
+}
+.nav-cta:hover { background: var(--blue) !important; }
+
+/* ── HERO ── */
+.hero {
+min-height: 100vh;
+background: var(--navy);
+position: relative;
+overflow: hidden;
+display: flex;
+align-items: center;
+padding: 120px 48px 80px;
+}
+
+.hero::before {
+content: '';
+position: absolute;
+inset: 0;
+background:
+radial-gradient(ellipse 80% 50% at 50% 120%, rgba(42,184,212,0.12) 0%, transparent 60%),
+radial-gradient(ellipse 60% 40% at 80% 60%, rgba(26,111,168,0.15) 0%, transparent 50%),
+radial-gradient(ellipse 40% 60% at 20% 40%, rgba(42,184,212,0.08) 0%, transparent 50%);
+pointer-events: none;
+}
+
+.hero::after {
+content: '';
+position: absolute;
+bottom: 0; left: 0; right: 0;
+height: 3px;
+background: linear-gradient(90deg, transparent, var(--aqua), var(--aqua-light), transparent);
+animation: speedLine 3s ease-in-out infinite;
+}
+@keyframes speedLine {
+0%, 100% { opacity: 0.4; transform: scaleX(0.7); }
+50% { opacity: 1; transform: scaleX(1); }
+}
+
+.wake {
+position: absolute;
+bottom: 60px; left: 0; right: 0;
+height: 200px;
+pointer-events: none;
+overflow: hidden;
+}
+.wake-line {
+position: absolute;
+bottom: 0;
+width: 100%;
+height: 1px;
+background: linear-gradient(90deg, transparent 0%, rgba(42,184,212,0.3) 30%, rgba(93,207,224,0.5) 50%, rgba(42,184,212,0.3) 70%, transparent 100%);
+animation: wakeMove 4s ease-in-out infinite;
+}
+.wake-line:nth-child(1) { bottom: 20px; animation-delay: 0s; opacity: 0.8; }
+.wake-line:nth-child(2) { bottom: 45px; animation-delay: 0.4s; opacity: 0.5; }
+.wake-line:nth-child(3) { bottom: 70px; animation-delay: 0.8s; opacity: 0.3; }
+.wake-line:nth-child(4) { bottom: 100px; animation-delay: 1.2s; opacity: 0.15; }
+.wake-line:nth-child(5) { bottom: 135px; animation-delay: 1.6s; opacity: 0.08; }
+@keyframes wakeMove {
+0%, 100% { transform: translateX(-2%) scaleY(1); }
+50% { transform: translateX(2%) scaleY(1.5); }
+}
+
+.hero-content {
+position: relative;
+z-index: 2;
+max-width: 800px;
+}
+
+.hero-eyebrow {
+display: inline-flex;
+align-items: center;
+gap: 10px;
+font-size: 11px;
+font-weight: 500;
+letter-spacing: 4px;
+text-transform: uppercase;
+color: var(--aqua);
+margin-bottom: 28px;
+}
+
+.hero-title {
+font-family: 'Bebas Neue', sans-serif;
+font-size: clamp(64px, 9vw, 130px);
+line-height: 0.92;
+letter-spacing: 2px;
+color: var(--white);
+margin-bottom: 32px;
+}
+.hero-title .aqua { color: var(--aqua); }
+.hero-title .line2 {
+display: block;
+-webkit-text-stroke: 1px rgba(255,255,255,0.4);
+color: transparent;
+}
+
+.hero-sub {
+font-size: 18px;
+color: rgba(255,255,255,0.75);
+margin-bottom: 36px;
+font-style: italic;
+font-family: 'DM Serif Display', serif;
+letter-spacing: 0.3px;
+line-height: 1.5;
+}
+
+.hero-ctas {
+display: flex;
+gap: 16px;
+flex-wrap: wrap;
+align-items: center;
+}
+
+.btn-primary {
+display: inline-flex;
+align-items: center;
+gap: 10px;
+background: var(--aqua);
+color: var(--white);
+font-size: 14px;
+font-weight: 500;
+letter-spacing: 0.5px;
+padding: 16px 36px;
+border-radius: 4px;
+text-decoration: none;
+transition: all 0.2s;
+border: none;
+cursor: pointer;
+font-family: 'DM Sans', sans-serif;
+}
+.btn-primary:hover { background: var(--aqua-light); transform: translateY(-1px); }
+.btn-primary .arrow { transition: transform 0.2s; }
+.btn-primary:hover .arrow { transform: translateX(4px); }
+
+.btn-secondary {
+display: inline-flex;
+align-items: center;
+gap: 10px;
+background: transparent;
+color: rgba(255,255,255,0.7);
+font-size: 14px;
+font-weight: 400;
+letter-spacing: 0.5px;
+padding: 16px 28px;
+border-radius: 4px;
+text-decoration: none;
+border: 1px solid rgba(255,255,255,0.2);
+transition: all 0.2s;
+font-family: 'DM Sans', sans-serif;
+}
+.btn-secondary:hover { border-color: var(--aqua); color: var(--aqua); }
+
+.hero-stats {
+display: flex;
+gap: 48px;
+margin-top: 64px;
+padding-top: 40px;
+border-top: 1px solid rgba(255,255,255,0.08);
+flex-wrap: wrap;
+}
+.stat-num {
+font-family: 'Bebas Neue', sans-serif;
+font-size: 42px;
+letter-spacing: 1px;
+color: var(--aqua);
+line-height: 1;
+}
+.stat-label {
+font-size: 12px;
+color: rgba(255,255,255,0.4);
+letter-spacing: 1px;
+text-transform: uppercase;
+margin-top: 4px;
+}
+
+/* ── PROBLEM SECTION ── */
+.problem {
+padding: 100px 48px;
+background: var(--off-white);
+}
+.section-inner { max-width: 1100px; margin: 0 auto; }
+
+.section-eyebrow {
+font-size: 11px;
+font-weight: 500;
+letter-spacing: 4px;
+text-transform: uppercase;
+color: var(--aqua);
+margin-bottom: 20px;
+display: flex;
+align-items: center;
+gap: 12px;
+}
+.section-eyebrow::after {
+content: '';
+flex: 1;
+max-width: 60px;
+height: 1px;
+background: var(--aqua);
+}
+
+.section-title {
+font-family: 'DM Serif Display', serif;
+font-size: clamp(32px, 4vw, 52px);
+line-height: 1.1;
+color: var(--navy);
+margin-bottom: 20px;
+}
+.section-title em { font-style: italic; color: var(--blue); }
+
+.section-sub {
+font-size: 17px;
+color: var(--muted);
+line-height: 1.7;
+max-width: 600px;
+margin-bottom: 60px;
+}
+
+.pain-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+gap: 24px;
+}
+
+.pain-card {
+background: var(--white);
+border: 1px solid rgba(0,0,0,0.07);
+border-radius: 4px;
+padding: 32px;
+position: relative;
+overflow: hidden;
+transition: transform 0.2s, box-shadow 0.2s;
+}
+.pain-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(11,30,53,0.1); }
+.pain-card::before {
+content: '';
+position: absolute;
+top: 0; left: 0; right: 0;
+height: 3px;
+background: linear-gradient(90deg, var(--blue), var(--aqua));
+}
+.pain-icon { font-size: 28px; margin-bottom: 16px; display: block; }
+.pain-title {
+font-family: 'DM Serif Display', serif;
+font-size: 20px;
+color: var(--navy);
+margin-bottom: 10px;
+}
+.pain-desc { font-size: 14px; color: var(--muted); line-height: 1.7; }
+
+/* ── SOLUTION SECTION ── */
+.solution { padding: 100px 48px; background: var(--white); }
+
+.apps-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));
+gap: 32px;
+margin-top: 60px;
+}
+
+.app-card {
+border-radius: 6px;
+overflow: hidden;
+border: 1px solid var(--border);
+transition: transform 0.3s, box-shadow 0.3s;
+}
+.app-card:hover { transform: translateY(-6px); box-shadow: 0 24px 60px rgba(42,184,212,0.12); }
+
+.app-card-header {
+background: var(--navy);
+padding: 36px 36px 28px;
+position: relative;
+overflow: hidden;
+}
+.app-card-header::after {
+content: '';
+position: absolute;
+bottom: 0; left: 0; right: 0;
+height: 2px;
+background: linear-gradient(90deg, var(--blue), var(--aqua), var(--aqua-light));
+}
+.app-number {
+font-family: 'Bebas Neue', sans-serif;
+font-size: 72px;
+color: rgba(42,184,212,0.15);
+line-height: 1;
+position: absolute;
+top: 16px; right: 28px;
+letter-spacing: 2px;
+}
+.app-tag { font-size: 10px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--aqua); margin-bottom: 12px; }
+.app-name { font-family: 'DM Serif Display', serif; font-size: 26px; color: var(--white); margin-bottom: 8px; }
+.app-desc { font-size: 14px; color: rgba(255,255,255,0.5); line-height: 1.6; }
+
+.app-card-body { padding: 32px 36px; background: var(--off-white); }
+.app-features { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.app-features li { display: flex; align-items: flex-start; gap: 12px; font-size: 14px; color: var(--text); line-height: 1.5; }
+.app-features li::before { content: '→'; color: var(--aqua); font-weight: 600; flex-shrink: 0; margin-top: 1px; }
+
+/* ── PRICING ── */
+.pricing {
+padding: 100px 48px;
+background: var(--navy);
+position: relative;
+overflow: hidden;
+}
+.pricing::before {
+content: '';
+position: absolute;
+inset: 0;
+background: radial-gradient(ellipse 60% 80% at 50% 100%, rgba(42,184,212,0.08) 0%, transparent 60%);
+pointer-events: none;
+}
+.pricing .section-title { color: var(--white); }
+.pricing .section-sub { color: rgba(255,255,255,0.5); }
+.pricing .section-eyebrow { color: var(--aqua); }
+
+.pricing-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+gap: 24px;
+margin-top: 60px;
+align-items: start;
+}
+
+.pricing-card {
+background: rgba(255,255,255,0.04);
+border: 1px solid rgba(42,184,212,0.2);
+border-radius: 6px;
+padding: 40px 36px;
+position: relative;
+transition: transform 0.2s, border-color 0.2s;
+}
+.pricing-card:hover { transform: translateY(-4px); border-color: var(--aqua); }
+.pricing-card.featured { background: rgba(42,184,212,0.08); border-color: var(--aqua); transform: scale(1.03); }
+.pricing-card.featured:hover { transform: scale(1.03) translateY(-4px); }
+
+.featured-badge {
+position: absolute;
+top: -1px; left: 50%;
+transform: translateX(-50%);
+background: var(--aqua);
+color: var(--navy);
+font-size: 10px; font-weight: 700;
+letter-spacing: 2px; text-transform: uppercase;
+padding: 5px 16px;
+border-radius: 0 0 6px 6px;
+}
+
+.plan-name { font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--aqua); margin-bottom: 16px; }
+.plan-price { font-family: 'Bebas Neue', sans-serif; font-size: 64px; color: var(--white); line-height: 1; letter-spacing: 1px; }
+.plan-price sup { font-size: 28px; vertical-align: super; }
+.plan-price sub { font-size: 16px; color: rgba(255,255,255,0.4); letter-spacing: 0; font-family: 'DM Sans', sans-serif; font-weight: 300; }
+.plan-desc { font-size: 13px; color: rgba(255,255,255,0.4); margin: 12px 0 28px; line-height: 1.6; }
+.plan-divider { height: 1px; background: rgba(42,184,212,0.2); margin-bottom: 24px; }
+.plan-features { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 36px; }
+.plan-features li { font-size: 13px; color: rgba(255,255,255,0.65); display: flex; gap: 10px; align-items: flex-start; line-height: 1.5; }
+.plan-features li span.check { color: var(--aqua); font-weight: 700; flex-shrink: 0; }
+
+.btn-plan { display: block; width: 100%; text-align: center; padding: 14px; border-radius: 4px; font-size: 13px; font-weight: 500; letter-spacing: 0.5px; text-decoration: none; transition: all 0.2s; font-family: 'DM Sans', sans-serif; border: none; cursor: pointer; }
+.btn-plan-outline { background: transparent; border: 1px solid rgba(42,184,212,0.4); color: var(--aqua); }
+.btn-plan-outline:hover { background: var(--aqua); color: var(--navy); }
+.btn-plan-fill { background: var(--aqua); color: var(--navy); font-weight: 600; }
+.btn-plan-fill:hover { background: var(--aqua-light); }
+
+/* ── HOW IT WORKS ── */
+.how { padding: 100px 48px; background: var(--off-white); }
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0; margin-top: 60px; position: relative; }
+.steps::before { content: ''; position: absolute; top: 36px; left: 10%; right: 10%; height: 1px; background: linear-gradient(90deg, transparent, var(--aqua), var(--aqua), transparent); opacity: 0.3; }
+.step { text-align: center; padding: 0 24px; position: relative; }
+.step-num { width: 72px; height: 72px; border-radius: 50%; background: var(--white); border: 2px solid var(--aqua); display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--aqua); letter-spacing: 1px; position: relative; z-index: 2; }
+.step-title { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--navy); margin-bottom: 10px; }
+.step-desc { font-size: 13px; color: var(--muted); line-height: 1.7; }
+
+/* ── DEMO SECTION ── */
+.demo {
+padding: 100px 48px;
+background: var(--navy);
+position: relative;
+overflow: hidden;
+}
+.demo::before {
+content: '';
+position: absolute;
+inset: 0;
+background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(42,184,212,0.07) 0%, transparent 70%);
+pointer-events: none;
+}
+.demo .section-title { color: var(--white); }
+.demo .section-sub { color: rgba(255,255,255,0.5); }
+.demo .section-eyebrow { color: var(--aqua); }
+
+.demo-video-wrap {
+max-width: 820px;
+margin: 0 auto 40px;
+border-radius: 12px;
+overflow: hidden;
+border: 1px solid rgba(42,184,212,0.3);
+box-shadow: 0 0 80px rgba(42,184,212,0.12);
+}
+.demo-video-inner {
+position: relative;
+width: 100%;
+padding-top: 56.25%;
+}
+.demo-video-inner iframe {
+position: absolute;
+top: 0; left: 0;
+width: 100%; height: 100%;
+}
+.demo-placeholder {
+position: absolute;
+top: 0; left: 0; right: 0; bottom: 0;
+background: rgba(255,255,255,0.03);
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+gap: 14px;
+border: 2px dashed rgba(42,184,212,0.25);
+border-radius: 12px;
+}
+.demo-play-btn {
+width: 80px;
+height: 80px;
+border-radius: 50%;
+background: var(--aqua);
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 28px;
+color: var(--navy);
+padding-left: 6px;
+box-shadow: 0 0 40px rgba(42,184,212,0.4);
+}
+.demo-placeholder-text {
+font-family: 'DM Serif Display', serif;
+font-size: 20px;
+color: rgba(255,255,255,0.7);
+}
+.demo-placeholder-sub {
+font-size: 13px;
+color: rgba(255,255,255,0.3);
+text-align: center;
+max-width: 380px;
+line-height: 1.6;
+}
+.demo-cta { text-align: center; }
+
+/* ── TRUST ── */
+.trust { padding: 80px 48px; background: var(--white); text-align: center; }
+.trust-inner { max-width: 700px; margin: 0 auto; }
+.trust-quote { font-family: 'DM Serif Display', serif; font-size: clamp(22px, 3vw, 34px); font-style: italic; color: var(--navy); line-height: 1.4; margin-bottom: 28px; }
+.trust-quote em { color: var(--blue); }
+.trust-author { font-size: 13px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
+.trust-divider { width: 60px; height: 2px; background: linear-gradient(90deg, var(--blue), var(--aqua)); margin: 0 auto 36px; }
+
+/* ── CTA ── */
+.cta-section { padding: 100px 48px; background: var(--navy); text-align: center; position: relative; overflow: hidden; }
+.cta-section::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(42,184,212,0.1) 0%, transparent 70%); }
+.cta-section .section-title { color: var(--white); margin: 0 auto 16px; max-width: 700px; }
+.cta-section .section-sub { color: rgba(255,255,255,0.5); margin: 0 auto 48px; }
+.cta-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; position: relative; }
+
+/* ── FOOTER ── */
+footer { background: #070F1A; padding: 48px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; border-top: 1px solid rgba(42,184,212,0.1); }
+.footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 3px; color: var(--white); }
+.footer-logo span { color: var(--aqua); }
+.footer-copy { font-size: 12px; color: rgba(255,255,255,0.25); letter-spacing: 0.5px; }
+.footer-links { display: flex; gap: 28px; }
+.footer-links a { font-size: 12px; color: rgba(255,255,255,0.3); text-decoration: none; letter-spacing: 0.5px; transition: color 0.2s; }
+.footer-links a:hover { color: var(--aqua); }
+
+/* ── ANIMATIONS ── */
+.fade-up { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+.fade-up.visible { opacity: 1; transform: translateY(0); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+nav { padding: 16px 24px; }
+.nav-links { display: none; }
+.hero { padding: 100px 24px 60px; }
+.hero-title { font-size: 72px; }
+.problem, .solution, .pricing, .how, .trust, .cta-section { padding: 70px 24px; }
+footer { padding: 32px 24px; flex-direction: column; text-align: center; }
+.hero-stats { gap: 28px; }
+.steps::before { display: none; }
+.apps-grid { grid-template-columns: 1fr; }
+.pricing-card.featured { transform: scale(1); }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+<a href="#" class="nav-logo">STREAM<span>FLUX</span></a>
+<div class="nav-links">
+<a href="#solution">The Tools</a>
+<a href="#how">How It Works</a>
+<a href="#demo">Demo</a>
+<a href="#pricing">Pricing</a>
+<a href="#pricing" class="nav-cta">Get Started</a>
+</div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+<div class="wake">
+<div class="wake-line"></div>
+<div class="wake-line"></div>
+<div class="wake-line"></div>
+<div class="wake-line"></div>
+<div class="wake-line"></div>
+</div>
+<div class="hero-content">
+
+<div class="hero-video-wrap">
+<div class="hero-video-inner">
+<div class="video-placeholder">
+<div class="play-btn">▶</div>
+<p class="video-placeholder-text">Your intro video goes here</p>
+<p class="video-placeholder-sub">Record a 60-90 second video and paste your YouTube link here</p>
+</div>
+<!-- End screen — appears when video finishes. To activate: add class "visible" via JS when YouTube player fires onStateChange == YT.PlayerState.ENDED -->
+<div class="video-end-screen" id="videoEndScreen">
+<div class="video-end-content">
+<p class="video-end-label">Want to see it in action?</p>
+<button class="video-end-btn" onclick="document.getElementById('demo').scrollIntoView({behavior:'smooth'})">Watch the Demo ↓</button>
+</div>
+</div>
+</div>
+</div>
+
+<h1 class="hero-title">
+MARKET<span class="aqua"> FASTER.</span>
+<span class="line2">CLOSE MORE.</span>
+</h1>
+
+<p class="hero-sub">Your full marketing package generated in seconds. Just copy. Just paste.</p>
+
+<div class="hero-ctas">
+<a href="#pricing" class="btn-primary">Start Free Trial <span class="arrow">→</span></a>
+<a href="#solution" class="btn-secondary">See the Tools</a>
+</div>
+
+<div class="hero-stats">
+<div class="stat-item">
+<div class="stat-num">30s</div>
+<div class="stat-label">To Full Marketing Kit</div>
+</div>
+<div class="stat-item">
+<div class="stat-num">11+</div>
+<div class="stat-label">Content Pieces Generated</div>
+</div>
+<div class="stat-item">
+<div class="stat-num">$0</div>
+<div class="stat-label">Copywriter Needed</div>
+</div>
+<div class="stat-item">
+<div class="stat-num">24/7</div>
+<div class="stat-label">Always Available</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- PROBLEM -->
+<section class="problem" id="problem">
+<div class="section-inner">
+<div class="section-eyebrow fade-up">The Problem</div>
+<h2 class="section-title fade-up">Agents are <em>drowning</em> in repetitive work.</h2>
+<p class="section-sub fade-up">Writing listings, social posts, emails, follow-ups, letters — manually, every single day. Hours wasted. Deals missed. Money left on the table.</p>
+<div class="pain-grid">
+<div class="pain-card fade-up">
+<span class="pain-icon">⏰</span>
+<div class="pain-title">Hours Writing Content</div>
+<p class="pain-desc">The average agent spends 5-8 hours per week writing listing descriptions, captions, and emails. That's time that should be spent closing deals.</p>
+</div>
+<div class="pain-card fade-up">
+<span class="pain-icon">📉</span>
+<div class="pain-title">Inconsistent Follow-Up</div>
+<p class="pain-desc">Most agents follow up once or twice then give up. 80% of sales happen after the 5th contact. Leads go cold. Commissions disappear.</p>
+</div>
+<div class="pain-card fade-up">
+<span class="pain-icon">💸</span>
+<div class="pain-title">Expensive Freelancers</div>
+<p class="pain-desc">Hiring a copywriter costs $100-200 per listing. A social media manager runs $500/month. A VA for follow-ups is another $400/month. It adds up fast.</p>
+</div>
+<div class="pain-card fade-up">
+<span class="pain-icon">🌙</span>
+<div class="pain-title">No Help After Hours</div>
+<p class="pain-desc">Leads come in at 11pm. Buyers want answers on Sunday. Your copywriter isn't working. Your VA is asleep. Opportunities are missed.</p>
+</div>
+</div>
+</div>
+</section>
+
+<!-- SOLUTION -->
+<section class="solution" id="solution">
+<div class="section-inner">
+<div class="section-eyebrow fade-up">The Solution</div>
+<h2 class="section-title fade-up">Two powerful tools.<br><em>One complete system.</em></h2>
+<p class="section-sub fade-up">Streamflux replaces your copywriter, your social media manager, and your follow-up VA — all in one AI-powered platform built exclusively for real estate.</p>
+<div class="apps-grid">
+<div class="app-card fade-up">
+<div class="app-card-header">
+<div class="app-number">01</div>
+<div class="app-tag">App One</div>
+<div class="app-name">Property Marketing Machine</div>
+<div class="app-desc">You have a new listing. Generate your entire marketing package in 30 seconds.</div>
+</div>
+<div class="app-card-body">
+<ul class="app-features">
+<li>MLS listing description (130-150 words, professional grade)</li>
+<li>Instagram caption with hashtags and emojis</li>
+<li>Facebook caption with full property details</li>
+<li>Twitter / X post (punchy, under 240 chars)</li>
+<li>LinkedIn post for professional network</li>
+<li>Email subject line + full email body</li>
+<li>SMS blast (under 160 characters)</li>
+<li>WhatsApp broadcast message</li>
+<li>Google Ad copy + Facebook Ad copy</li>
+<li>TikTok video script (hook, body, CTA)</li>
+<li>Neighbour letter to generate referrals</li>
+</ul>
+</div>
+</div>
+<div class="app-card fade-up">
+<div class="app-card-header">
+<div class="app-number">02</div>
+<div class="app-tag">App Two</div>
+<div class="app-name">Client Outreach Machine</div>
+<div class="app-desc">You have a buyer or seller to contact. Generate a fully personalised outreach package.</div>
+</div>
+<div class="app-card-body">
+<ul class="app-features">
+<li>Personalised WhatsApp message for the specific client</li>
+<li>SMS message (under 160 characters)</li>
+<li>Full phone call script (opening, pitch, close)</li>
+<li>Email subject line + professional email body</li>
+<li>Formal printed letter ready to post</li>
+<li>4 follow-up messages (Day 3, Week 1, Week 2, Month 1)</li>
+<li>Tailored for buyers, sellers, investors, or cold leads</li>
+<li>Matches urgency level and client situation</li>
+<li>Uses client's name and personal context throughout</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+<div class="section-inner">
+<div class="section-eyebrow fade-up">How It Works</div>
+<h2 class="section-title fade-up">Simple as <em>three steps.</em></h2>
+<p class="section-sub fade-up">No training. No learning curve. If you can fill in a form, you can use Streamflux.</p>
+<div class="steps">
+<div class="step fade-up">
+<div class="step-num">1</div>
+<div class="step-title">Fill In the Details</div>
+<p class="step-desc">Answer simple guided questions about the property or client. Tap the features that apply. Takes under 2 minutes.</p>
+</div>
+<div class="step fade-up">
+<div class="step-num">2</div>
+<div class="step-title">Hit Generate</div>
+<p class="step-desc">Our AI writes everything simultaneously. 30 seconds later your complete package is ready — professional, polished, personalised.</p>
+</div>
+<div class="step fade-up">
+<div class="step-num">3</div>
+<div class="step-title">Copy & Deploy</div>
+<p class="step-desc">Tap Copy on any piece of content and paste it wherever you need it. Instagram, email, WhatsApp, print. Done.</p>
+</div>
+</div>
+</div>
+</section>
+
+<!-- DEMO -->
+<section class="demo" id="demo">
+<div class="section-inner">
+<div class="section-eyebrow fade-up">See It In Action</div>
+<h2 class="section-title fade-up">Watch how <em>simple it is.</em></h2>
+<p class="section-sub fade-up">See Streamflux generate a complete property marketing package in 30 seconds. No complicated setup. No learning curve. Just results.</p>
+<div class="demo-video-wrap fade-up">
+<div class="demo-video-inner">
+<!-- TO ADD YOUR DEMO: replace this div with:
+<iframe width="100%" height="100%" src="https://www.youtube.com/embed/YOUR_VIDEO_ID" frameborder="0" allowfullscreen></iframe>
+-->
+<div class="demo-placeholder">
+<div class="demo-play-btn">▶</div>
+<p class="demo-placeholder-text">Demo video coming soon</p>
+<p class="demo-placeholder-sub">A 60-second screen recording showing Streamflux generating a full marketing package in real time</p>
+</div>
+</div>
+</div>
+<div class="demo-cta fade-up">
+<a href="#pricing" class="btn-primary">Try It Free <span class="arrow">→</span></a>
+</div>
+</div>
+</section>
+
+<!-- TRUST -->
+<section class="trust">
+<div class="trust-inner">
+<div class="trust-divider"></div>
+<p class="trust-quote fade-up">"In 30 seconds I had my listing description, six social posts, five follow-up messages, and a formal letter. This used to take me <em>an entire afternoon.</em>"</p>
+<p class="trust-author fade-up">Real Estate Agent — Miami, FL</p>
+</div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+<div class="section-inner">
+<div class="section-eyebrow fade-up">Pricing</div>
+<h2 class="section-title fade-up">Simple, transparent pricing.</h2>
+<p class="section-sub fade-up">No contracts. No hidden fees. Cancel anytime. Start today.</p>
+<div class="pricing-grid">
+<div class="pricing-card fade-up">
+<div class="plan-name">Marketing Tool</div>
+<div class="plan-price"><sup>$</sup>125<sub>/mo</sub></div>
+<p class="plan-desc">The Property Marketing Machine. Everything you need to promote a listing everywhere.</p>
+<div class="plan-divider"></div>
+<ul class="plan-features">
+<li><span class="check">✓</span> MLS listing description</li>
+<li><span class="check">✓</span> Instagram, Facebook, Twitter, LinkedIn</li>
+<li><span class="check">✓</span> Email subject + body</li>
+<li><span class="check">✓</span> SMS blast + WhatsApp broadcast</li>
+<li><span class="check">✓</span> Google & Facebook ad copy</li>
+<li><span class="check">✓</span> TikTok video script</li>
+<li><span class="check">✓</span> Neighbour letter</li>
+<li><span class="check">✓</span> Unlimited listings</li>
+</ul>
+<a href="#" class="btn-plan btn-plan-outline">Get Started</a>
+</div>
+<div class="pricing-card featured fade-up">
+<div class="featured-badge">Most Popular</div>
+<div class="plan-name">Complete Bundle</div>
+<div class="plan-price"><sup>$</sup>157<sub>/mo</sub></div>
+<p class="plan-desc">Both tools. Full system. Save $93/month versus buying separately.</p>
+<div class="plan-divider"></div>
+<ul class="plan-features">
+<li><span class="check">✓</span> Everything in Marketing Tool</li>
+<li><span class="check">✓</span> Client Outreach Machine</li>
+<li><span class="check">✓</span> Personalised buyer & seller messages</li>
+<li><span class="check">✓</span> Phone call scripts</li>
+<li><span class="check">✓</span> Formal printed letters</li>
+<li><span class="check">✓</span> 4-message follow-up sequences</li>
+<li><span class="check">✓</span> Unlimited clients & listings</li>
+<li><span class="check">✓</span> Priority support</li>
+</ul>
+<a href="#" class="btn-plan btn-plan-fill">Get the Bundle</a>
+</div>
+<div class="pricing-card fade-up">
+<div class="plan-name">Outreach Tool</div>
+<div class="plan-price"><sup>$</sup>125<sub>/mo</sub></div>
+<p class="plan-desc">The Client Outreach Machine. Personalised messages for every buyer and seller.</p>
+<div class="plan-divider"></div>
+<ul class="plan-features">
+<li><span class="check">✓</span> WhatsApp & SMS messages</li>
+<li><span class="check">✓</span> Phone call scripts</li>
+<li><span class="check">✓</span> Professional email + subject</li>
+<li><span class="check">✓</span> Formal printed letters</li>
+<li><span class="check">✓</span> 4 follow-up sequences</li>
+<li><span class="check">✓</span> Buyer, seller & investor modes</li>
+<li><span class="check">✓</span> Unlimited clients</li>
+</ul>
+<a href="#" class="btn-plan btn-plan-outline">Get Started</a>
+</div>
+</div>
+</div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+<div class="section-inner" style="text-align:center; position:relative;">
+<div class="section-eyebrow fade-up" style="justify-content:center;">Ready to Move Faster?</div>
+<h2 class="section-title fade-up">Stop writing.<br><em>Start closing.</em></h2>
+<p class="section-sub fade-up">Join agents already using Streamflux to market listings faster, follow up smarter, and close more deals.</p>
+<div class="cta-buttons">
+<a href="#pricing" class="btn-primary">Get Started Today <span class="arrow">→</span></a>
+<a href="#solution" class="btn-secondary">See the Tools First</a>
+</div>
+</div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+<div class="footer-logo">STREAM<span>FLUX</span></div>
+<div class="footer-links">
+<a href="#">Privacy</a>
+<a href="#">Terms</a>
+<a href="#">Contact</a>
+</div>
+<div class="footer-copy">© 2026 Streamflux AI Ltd. All rights reserved.</div>
+</footer>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+entries.forEach((entry, i) => {
+if (entry.isIntersecting) {
+setTimeout(() => entry.target.classList.add('visible'), i * 80);
+}
+});
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+window.addEventListener('scroll', () => {
+const nav = document.querySelector('nav');
+nav.style.boxShadow = window.scrollY > 50 ? '0 4px 30px rgba(11,30,53,0.12)' : 'none';
+});
+</script>
+</body>
+</html>
