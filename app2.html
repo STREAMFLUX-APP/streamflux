@@ -104,6 +104,7 @@ const TABS = [
 { id: "email", label: "📧 Email" },
 { id: "letter", label: "✉️ Formal Letter" },
 { id: "followups", label: "🔄 Follow-Ups" },
+{ id: "schedule", label: "📅 Schedule" },
 ];
 
 // Property matcher properties
@@ -365,7 +366,17 @@ Return ONLY raw JSON:
 }
 
 const part2 = await callClaude(apiKey, part2Prompt, 1400);
-setResult({ ...part1, ...part2 });
+
+setLoadingMsg("✦ Building your follow-up schedule...");
+const schedulePrompt = `You are an elite real estate sales coach. Create a practical follow-up schedule for this agent.
+
+CLIENT: ${clientName} | TYPE: ${CLIENT_TYPES.find(t => t.value === clientType)?.label || clientType} | REASON: ${CONTACT_REASONS.find(r => r.value === contactReason)?.label || contactReason}
+
+Return ONLY raw JSON:
+{"schedule":[{"day":"Today — First Contact","icon":"🚀","tasks":["Send the WhatsApp message","If no reply after 2 hours, send the SMS as well","Save this client in your CRM with today's date"]},{"day":"Day 3 — First Follow-Up","icon":"💬","tasks":["Send Follow-Up #1 if no reply to your first message","Check if they opened your email — call if they did","Note their response or silence in your CRM"]},{"day":"Day 7 — Week 1 Check-In","icon":"📞","tasks":["Send Follow-Up #2 with a new angle","Make a phone call using your voice script","If they answer, listen first — ask questions before pitching"]},{"day":"Day 14 — Two Week Touch","icon":"🔄","tasks":["Send Follow-Up #3 — casual, no pressure","Share a relevant market update or new listing if available","Update your CRM with their current status"]},{"day":"Day 30 — Monthly Touch","icon":"🌱","tasks":["Send Follow-Up #4 — final warm message","If still no reply, move to monthly newsletter or market update list","Do not give up — timing is everything in real estate"]},{"day":"Ongoing — Stay Top of Mind","icon":"📅","tasks":["Add to monthly market update email list","Reach out on their home anniversary if they are a past client","Check in every 90 days if they are a long-term lead"]}]}`;
+
+const part3 = await callClaude(apiKey, schedulePrompt, 900);
+setResult({ ...part1, ...part2, ...part3 });
 setActiveTab("messages");
 } catch (err) {
 setError("Error: " + err.message);
@@ -453,6 +464,25 @@ fontSize: 12, fontWeight: activeTab === tab.id ? 700 : 400, fontFamily: "inherit
 <OutputCard title="Follow-Up #2" icon="💬" badge="Week 1" content={result.followup_2} />
 <OutputCard title="Follow-Up #3" icon="💬" badge="Week 2" content={result.followup_3} />
 <OutputCard title="Follow-Up #4" icon="💬" badge="Month 1" content={result.followup_4} />
+</>}
+{activeTab === "schedule" && <>
+<p style={{ color: G.muted, fontSize: 13, margin: "0 0 18px" }}>Your exact follow-up plan for {clientName}. Follow this and never miss a touch point again.</p>
+{result.schedule && result.schedule.map((day, i) => (
+<div key={i} style={{ background: "#0d1017", border: `1px solid ${G.border}`, borderRadius: 10, padding: "16px 18px", marginBottom: 14 }}>
+<div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+<span style={{ fontSize: 22 }}>{day.icon}</span>
+<span style={{ fontSize: 14, fontWeight: 700, color: G.blue }}>{day.day}</span>
+</div>
+<div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+{day.tasks && day.tasks.map((task, j) => (
+<div key={j} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+<span style={{ color: G.blue, fontWeight: 700, flexShrink: 0, fontSize: 14 }}>→</span>
+<span style={{ fontSize: 14, color: "#d1d5db", lineHeight: 1.6 }}>{task}</span>
+</div>
+))}
+</div>
+</div>
+))}
 </>}
 </div>
 </div>
