@@ -174,6 +174,90 @@ transition: transform 0.2s, box-shadow 0.2s; cursor: pointer;
 
 @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
 
+/* ── FULL FEATURES ── */
+.features-full { padding: 100px 48px; background: var(--black); }
+
+.features-app-block {
+background: var(--black-2);
+border: 1px solid var(--border);
+border-radius: 16px;
+overflow: hidden;
+margin-bottom: 32px;
+}
+
+.features-app-header {
+display: flex;
+align-items: center;
+gap: 24px;
+padding: 32px 36px;
+border-bottom: 1px solid var(--border);
+background: var(--black-3);
+}
+.features-app-num {
+font-family: 'Syne', sans-serif;
+font-size: 56px;
+font-weight: 800;
+color: rgba(42,184,212,0.15);
+line-height: 1;
+flex-shrink: 0;
+}
+.features-app-tag { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--aqua); margin-bottom: 6px; }
+.features-app-name { font-family: 'Instrument Serif', Georgia, serif; font-size: 24px; color: var(--white); margin-bottom: 4px; }
+.features-app-sub { font-size: 13px; color: var(--white-dim); }
+
+.features-modes {
+display: flex;
+flex-wrap: wrap;
+gap: 8px;
+padding: 20px 36px;
+border-bottom: 1px solid var(--border);
+}
+.features-mode-pill {
+background: rgba(42,184,212,0.08);
+border: 1px solid rgba(42,184,212,0.25);
+border-radius: 100px;
+padding: 5px 14px;
+font-size: 12px;
+font-weight: 600;
+color: var(--aqua);
+}
+
+.features-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+gap: 0;
+}
+.features-col {
+padding: 24px 28px;
+border-right: 1px solid var(--border);
+border-bottom: 1px solid var(--border);
+}
+.features-col:last-child { border-right: none; }
+.features-col-title {
+font-size: 12px;
+font-weight: 700;
+letter-spacing: 1px;
+text-transform: uppercase;
+color: var(--aqua);
+margin-bottom: 14px;
+}
+.features-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.features-list li {
+font-size: 13px;
+color: var(--white-dim);
+line-height: 1.6;
+display: flex;
+gap: 8px;
+align-items: flex-start;
+}
+.features-list li::before {
+content: '✓';
+color: var(--aqua);
+font-weight: 700;
+flex-shrink: 0;
+margin-top: 1px;
+}
+
 /* ── DIVIDER ── */
 .section-divider { border: none; border-top: 1px solid var(--border); margin: 0; }
 
@@ -337,7 +421,12 @@ nav { padding: 0 20px; }
 .hero-title { font-size: 44px; letter-spacing: -1px; }
 .hero-sub { font-size: 16px; }
 .btn-outline { display: none; }
-.problem, .solution, .pricing, .how, .testimonial, .cta-section, .demo { padding: 60px 20px; }
+.problem, .solution, .pricing, .how, .testimonial, .cta-section, .demo, .features-full { padding: 60px 20px; }
+.features-app-header { padding: 24px 20px; gap: 16px; }
+.features-modes { padding: 16px 20px; }
+.features-grid { grid-template-columns: 1fr; }
+.features-col { border-right: none; }
+.features-app-num { font-size: 40px; }
 footer { padding: 28px 20px; flex-direction: column; text-align: center; }
 .apps-grid { grid-template-columns: 1fr; }
 .pricing-card.featured { transform: none; }
@@ -363,6 +452,7 @@ nav { padding: 0 32px; }
 <a href="#" class="nav-logo">STREAM<span>FLUX</span></a>
 <div class="nav-links">
 <a href="#solution" data-i18n="nav_tools">The Tools</a>
+<a href="#features">Full Features</a>
 <a href="#how" data-i18n="nav_how">How It Works</a>
 <a href="#demo" data-i18n="nav_demo">Demo</a>
 <a href="#pricing" data-i18n="nav_pricing">Pricing</a>
@@ -387,6 +477,7 @@ nav { padding: 0 32px; }
 </nav>
 <div class="mobile-menu" id="mobileMenu">
 <a href="#solution" onclick="toggleMenu()" data-i18n="nav_tools">The Tools</a>
+<a href="#features" onclick="toggleMenu()">Full Features</a>
 <a href="#how" onclick="toggleMenu()" data-i18n="nav_how">How It Works</a>
 <a href="#demo" onclick="toggleMenu()" data-i18n="nav_demo">Demo</a>
 <a href="#pricing" onclick="toggleMenu()" data-i18n="nav_pricing">Pricing</a>
@@ -506,6 +597,154 @@ Market faster.<br>Close <em>more.</em>
 </div>
 </div>
 </div>
+</div>
+</section>
+
+<hr class="section-divider">
+
+<!-- FULL FEATURES -->
+<section class="features-full" id="features">
+<div class="section-inner">
+<div class="section-label fade-up">Everything Included</div>
+<h2 class="section-title fade-up">The complete list of<br><em>what you get.</em></h2>
+<p class="section-sub fade-up">No hidden limitations. No watered-down features. Here is every single thing both apps generate — in full detail.</p>
+
+<!-- APP 1 FEATURES -->
+<div class="features-app-block fade-up">
+<div class="features-app-header">
+<div class="features-app-num">01</div>
+<div>
+<div class="features-app-tag">App One</div>
+<div class="features-app-name">Property Marketing Machine</div>
+<div class="features-app-sub">4 modes. 11+ outputs. 30 seconds.</div>
+</div>
+</div>
+
+<div class="features-modes">
+<div class="features-mode-pill">🏠 New Listing</div>
+<div class="features-mode-pill">🚪 Open House</div>
+<div class="features-mode-pill">📉 Price Reduction</div>
+<div class="features-mode-pill">🏆 Just Sold</div>
+</div>
+
+<div class="features-grid">
+<div class="features-col">
+<div class="features-col-title">📝 Listing & Email</div>
+<ul class="features-list">
+<li>MLS listing description — 130-150 words, professional grade, hook opener, lifestyle angle, urgency close</li>
+<li>Email subject line — compelling, under 9 words, drives opens</li>
+<li>Full email body — 120-140 words, personalised, signed by the agent</li>
+</ul>
+</div>
+<div class="features-col">
+<div class="features-col-title">📱 Social Media</div>
+<ul class="features-list">
+<li>Instagram caption — 65-80 words, 6-8 emojis, hashtags, strong CTA</li>
+<li>Facebook caption — 70-90 words, full property details, booking CTA</li>
+<li>Twitter / X post — under 220 characters, punchy, price included</li>
+<li>LinkedIn post — 80-100 words, professional tone, investment angle</li>
+</ul>
+</div>
+<div class="features-col">
+<div class="features-col-title">🎯 Ads & Broadcasts</div>
+<ul class="features-list">
+<li>SMS blast — under 155 characters, price, address, CTA</li>
+<li>WhatsApp broadcast — 60-70 words, emojis, Reply YES to enquire</li>
+<li>Google Ad — headline under 30 chars, description under 90 chars</li>
+<li>Facebook & Instagram Ad — primary text, headline, description</li>
+</ul>
+</div>
+<div class="features-col">
+<div class="features-col-title">🎬 Video & Print</div>
+<ul class="features-list">
+<li>TikTok video script — hook (3 seconds), body (top features), CTA. 45-55 seconds when read aloud.</li>
+<li>Neighbour letter — 200-220 word formal letter, introduces listing, asks for referrals, signed by agent</li>
+<li>Day-by-day posting schedule — exactly when to post what, for 21 days</li>
+</ul>
+</div>
+<div class="features-col">
+<div class="features-col-title">⚙️ Customisation</div>
+<ul class="features-list">
+<li>5 writing tones — Luxury & Prestige, Warm & Friendly, Investment Focus, Lifestyle & Vibe, Urgency & FOMO</li>
+<li>75+ property features to select — interior, outdoor, building amenities</li>
+<li>30+ location features — beachfront, golf course, gated community and more</li>
+<li>Target buyer description — AI tailors every word to that specific buyer</li>
+<li>8 output languages — English, Spanish, Portuguese, French, Arabic, Chinese, German, Italian</li>
+</ul>
+</div>
+</div>
+</div>
+
+<!-- APP 2 FEATURES -->
+<div class="features-app-block fade-up">
+<div class="features-app-header">
+<div class="features-app-num">02</div>
+<div>
+<div class="features-app-tag">App Two</div>
+<div class="features-app-name">Client Outreach Machine</div>
+<div class="features-app-sub">7 client types. 11 contact reasons. Full outreach package.</div>
+</div>
+</div>
+
+<div class="features-modes">
+<div class="features-mode-pill">🔥 Active Buyer</div>
+<div class="features-mode-pill">👀 Passive Buyer</div>
+<div class="features-mode-pill">⚡ Motivated Seller</div>
+<div class="features-mode-pill">🤔 Exploring Seller</div>
+<div class="features-mode-pill">💰 Investor</div>
+<div class="features-mode-pill">❄️ Cold Lead</div>
+<div class="features-mode-pill">🤝 Past Client</div>
+</div>
+
+<div class="features-grid">
+<div class="features-col">
+<div class="features-col-title">💬 Messages</div>
+<ul class="features-list">
+<li>WhatsApp message — 60-80 words, warm, personal, uses client's name, ends with easy question</li>
+<li>SMS message — under 160 characters, punchy, personal, clear CTA</li>
+</ul>
+</div>
+<div class="features-col">
+<div class="features-col-title">📞 Voice & Email</div>
+<ul class="features-list">
+<li>Phone call script — Opening, Reason for Call, Value Pitch, Close. Natural spoken language.</li>
+<li>Email subject line — personal, curiosity-driving, under 10 words</li>
+<li>Full email body — 130-160 words, personal opener, opportunity, CTA, signed by agent</li>
+</ul>
+</div>
+<div class="features-col">
+<div class="features-col-title">✉️ Letter & Follow-Ups</div>
+<ul class="features-list">
+<li>Formal printed letter — 260-300 words, 4 paragraphs, professional sign-off, ready to post</li>
+<li>Follow-Up #1 — Day 3, friendly nudge, different angle</li>
+<li>Follow-Up #2 — Week 1, new urgency or market info</li>
+<li>Follow-Up #3 — Week 2, casual check-in, no pressure</li>
+<li>Follow-Up #4 — Month 1, final warm touch, keep door open</li>
+</ul>
+</div>
+<div class="features-col">
+<div class="features-col-title">🏆 Special Features</div>
+<ul class="features-list">
+<li>Property Preference Matcher — enter 3 properties, AI picks the best match for that buyer and writes all messages around it</li>
+<li>Objection Handler — 7 objections covered, perfect responses that keep the door open</li>
+<li>Home Anniversary messages — warm relationship touchpoint, stays top of mind</li>
+<li>Referral Request messages — natural, non-awkward ask after a successful deal</li>
+<li>Day-by-day follow-up schedule — exactly when to send each message</li>
+</ul>
+</div>
+<div class="features-col">
+<div class="features-col-title">⚙️ Customisation</div>
+<ul class="features-list">
+<li>11 contact reasons — New Listing, Price Drop, First Outreach, Reconnect, Open House, Market Update, Off-Market, Just Sold, Referral, Anniversary, Objection</li>
+<li>5 communication tones — Warm & Personal, Professional, Urgent & Direct, Casual & Relaxed, Luxury & Prestige</li>
+<li>Prior contact history field — AI references your actual relationship</li>
+<li>Personal notes field — kids, job, lifestyle details woven into every message</li>
+<li>8 output languages — English, Spanish, Portuguese, French, Arabic, Chinese, German, Italian</li>
+</ul>
+</div>
+</div>
+</div>
+
 </div>
 </section>
 
