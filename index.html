@@ -282,7 +282,7 @@ nav {
 
 /* ── PROBLEM ── */
 .problem { padding: 100px 48px; background: var(--black); }
-.pain-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 2px; border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+.pain-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
 .pain-card {
   background: var(--black-2); padding: 36px 32px;
   border-right: 1px solid var(--border);
@@ -436,7 +436,7 @@ footer { background: var(--black-2); padding: 44px 56px; display: flex; justify-
   .steps { grid-template-columns: 1fr; }
   .step { border-right: none; border-bottom: 1px solid var(--border); }
   .step:last-child { border-bottom: none; }
-  .pain-grid { grid-template-columns: 1fr; }
+  .pain-grid { grid-template-columns: repeat(2, 1fr); }
   .pain-card { border-right: none; border-bottom: 1px solid var(--border); }
   .pain-card:last-child { border-bottom: none; }
 }
@@ -649,6 +649,8 @@ footer { background: var(--black-2); padding: 44px 56px; display: flex; justify-
 
           v.addEventListener('ended',showEndScreen);
           v.addEventListener('webkitendfullscreen',function(){
+            controls.style.display='none';
+            controls.style.opacity='0';
             if(v.ended||v.currentTime>=v.duration-0.5)showEndScreen();
           });
           v.addEventListener('timeupdate',function(){
@@ -680,10 +682,14 @@ footer { background: var(--black-2); padding: 44px 56px; display: flex; justify-
     <h2 class="section-title fade-up" data-i18n="prob_title">Agents are <em>drowning</em><br>in repetitive work.</h2>
     <p class="section-sub fade-up" data-i18n="prob_sub">Writing listings, social posts, emails, follow-ups, letters — manually, every day. Hours wasted. Deals missed. Money left on the table.</p>
     <div class="pain-grid fade-up">
-      <div class="pain-card"><span class="pain-icon">⏰</span><div class="pain-title">Hours Writing Content</div><p class="pain-desc">The average agent spends 5-8 hours per week writing listing descriptions, captions, and emails. Time that should be spent closing deals.</p></div>
+      <div class="pain-card"><span class="pain-icon">⏰</span><div class="pain-title">Hours Writing Content</div><p class="pain-desc">The average agent spends 5-8 hours every week writing listing descriptions, social posts, and emails. Time that should be spent closing deals.</p></div>
+      <div class="pain-card"><span class="pain-icon">✏️</span><div class="pain-title">Not Sure What to Write</div><p class="pain-desc">You sit down and the blank page stares back. You do not know where to start. You second-guess every word. You get frustrated, drained, and still not happy with the result.</p></div>
       <div class="pain-card"><span class="pain-icon">📉</span><div class="pain-title">Inconsistent Follow-Up</div><p class="pain-desc">Most agents follow up once or twice then give up. 80% of sales happen after the 5th contact. Leads go cold. Commissions disappear.</p></div>
-      <div class="pain-card"><span class="pain-icon">💸</span><div class="pain-title">Expensive Freelancers</div><p class="pain-desc">A copywriter costs $100-200 per listing. A social media manager runs $500/month. A VA for follow-ups another $400/month. It adds up.</p></div>
-      <div class="pain-card"><span class="pain-icon">🌙</span><div class="pain-title">No Help After Hours</div><p class="pain-desc">Leads come in at 11pm. Buyers want answers on Sunday. Your copywriter is off. Your VA is asleep. Opportunities are missed.</p></div>
+      <div class="pain-card"><span class="pain-icon">💸</span><div class="pain-title">Expensive Freelancers</div><p class="pain-desc">A copywriter for listings. A social media manager. A VA for follow-ups. Done properly, it costs over $1,000 every single month — and most agents still are not happy with the results.</p></div>
+      <div class="pain-card"><span class="pain-icon">🌙</span><div class="pain-title">No Help After Hours</div><p class="pain-desc">Leads come in at 11pm. Buyers want answers on Sunday. Your copywriter is off. Your VA is asleep. Opportunities are missed every single weekend.</p></div>
+      <div class="pain-card"><span class="pain-icon">🎯</span><div class="pain-title">No System. No Consistency.</div><p class="pain-desc">Some weeks you post every day. Some weeks nothing. Some clients get five follow-ups. Most get one. Without a system, results are random — and random does not close deals, pay bills, or build a business.</p></div>
+      <div class="pain-card"><span class="pain-icon">😰</span><div class="pain-title">Missing Deals While Writing</div><p class="pain-desc">Every hour you spend writing is an hour you are not prospecting, not calling, not showing properties. The content never stops. The deals you missed never come back.</p></div>
+      <div class="pain-card"><span class="pain-icon">🔁</span><div class="pain-title">Starting From Zero Every Time</div><p class="pain-desc">Every new listing means starting from scratch. New property, same blank page, same process, same hours wasted. There is no system saving your work or building on what came before.</p></div>
     </div>
   </div>
 </section>
