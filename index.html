@@ -522,12 +522,12 @@ footer { background: var(--black-2); padding: 44px 56px; display: flex; justify-
       </video>
           <!-- Black end overlay with CTA -->
           <div id="sfEndScreen" style="display:none;position:absolute;inset:0;background:#080808;z-index:8;border-radius:12px;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;pointer-events:all;">
-            <div style="font-size:13px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#2AB8D4;margin-bottom:12px;">Ready to try it?</div>
-            <div style="font-size:22px;font-weight:700;color:#ffffff;margin-bottom:8px;">Start your free trial today.</div>
-            <div style="font-size:13px;color:#888;margin-bottom:24px;">No card required. 14-day free trial.</div>
-            <a href="#pricing" onclick="document.getElementById('sfEndScreen').style.display='none';" style="background:#2AB8D4;color:#080808;text-decoration:none;font-weight:700;font-size:15px;padding:16px 36px;border-radius:10px;display:inline-block;box-shadow:0 0 30px rgba(42,184,212,0.4);cursor:pointer;">Start Free Trial →</a>
-            <div style="margin-top:16px;">
-              <button id="sfReplay" style="background:transparent;border:1px solid #333;color:#666;font-size:12px;padding:8px 20px;border-radius:6px;cursor:pointer;font-family:inherit;">↺ Watch again</button>
+            <div style="font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#2AB8D4;margin-bottom:10px;">Ready to try it?</div>
+            <div style="font-size:clamp(16px,4vw,22px);font-weight:700;color:#ffffff;margin-bottom:6px;">Start your free trial today.</div>
+            <div style="font-size:12px;color:#888;margin-bottom:20px;">No card required. 14-day free trial.</div>
+            <a href="#pricing" onclick="document.getElementById('sfEndScreen').style.display='none';" style="background:#2AB8D4;color:#080808;text-decoration:none;font-weight:700;font-size:clamp(13px,3vw,15px);padding:clamp(12px,3vw,16px) clamp(24px,5vw,36px);border-radius:10px;display:inline-block;box-shadow:0 0 30px rgba(42,184,212,0.4);cursor:pointer;-webkit-tap-highlight-color:transparent;">Start Free Trial →</a>
+            <div style="margin-top:14px;">
+              <button id="sfReplay" style="background:transparent;border:1px solid #333;color:#666;font-size:12px;padding:10px 24px;border-radius:6px;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;">↺ Watch again</button>
             </div>
           </div>
       <!-- Rotate phone message — mobile only -->
@@ -570,16 +570,32 @@ footer { background: var(--black-2); padding: 44px 56px; display: flex; justify-
           var pauseIcon=document.getElementById('sfPauseIcon');
           var playIcon=document.getElementById('sfPlayIcon');
           var timeEl=document.getElementById('sfTime');
+          var ended=false;
+          var controlsTimer=null;
+
           function fmt(s){var m=Math.floor(s/60);var sec=Math.floor(s%60);return m+':'+(sec<10?'0':'')+sec;}
           function isMobile(){return window.innerWidth<768;}
           function isPortrait(){return window.innerHeight>window.innerWidth;}
+
+          // Controls — only show on interaction, auto hide after 2.5 seconds
+          function showControls(){
+            controls.style.opacity='1';
+            clearTimeout(controlsTimer);
+            controlsTimer=setTimeout(function(){controls.style.opacity='0';},2500);
+          }
+          wrap.addEventListener('click',function(){if(!v.paused)showControls();});
+          wrap.addEventListener('mousemove',function(){if(!v.paused)showControls();});
+          wrap.addEventListener('touchstart',function(){if(!v.paused)showControls();});
+
           function startVideo(){
             endScreen.style.display='none';
             thumb.style.opacity='0';
             v.style.opacity='1';
             v.play();
             bigBtn.style.display='none';
+            controls.style.opacity='0';
           }
+
           bigBtn.addEventListener('click',function(){
             if(isMobile()&&isPortrait()){
               rotateMsg.style.display='flex';
@@ -587,27 +603,16 @@ footer { background: var(--black-2); padding: 44px 56px; display: flex; justify-
               startVideo();
             }
           });
-          rotateSkip.addEventListener('click',function(){rotateMsg.style.display='none';startVideo();});
+
+          // Watch now — start video, user rotates manually to see fullscreen
+          rotateSkip.addEventListener('click',function(){
+            rotateMsg.style.display='none';
+            startVideo();
+          });
+
           bigBtn.addEventListener('mouseover',function(){bigBtn.style.transform='translate(-50%,-50%) scale(1.1)';bigBtn.style.boxShadow='0 0 50px rgba(42,184,212,0.8)';});
           bigBtn.addEventListener('mouseout',function(){bigBtn.style.transform='translate(-50%,-50%) scale(1)';bigBtn.style.boxShadow='0 0 40px rgba(42,184,212,0.6)';});
-          var ended=false;
-          v.addEventListener('ended',function(){
-            if(!ended){ended=true;endScreen.style.display='flex';endScreen.style.flexDirection='column';v.style.opacity='0';setTimeout(resetVideo,2000);}
-          });
-          v.addEventListener('webkitendfullscreen',function(){
-            if(v.ended||v.currentTime>=v.duration-0.5){endScreen.style.display='flex';endScreen.style.flexDirection='column';v.style.opacity='0';ended=true;setTimeout(resetVideo,2000);}
-          });
-          v.addEventListener('timeupdate',function(){
-            if(v.duration){
-              var remaining=v.duration-v.currentTime;
-              if(remaining<=2.5&&!v.paused&&!ended){
-                endScreen.style.display='flex';endScreen.style.flexDirection='column';
-                v.style.opacity='0';
-              }
-              bar.style.width=(v.currentTime/v.duration*100)+'%';
-              timeEl.textContent=fmt(v.currentTime)+' / '+fmt(v.duration);
-            }
-          });
+
           function resetVideo(){
             ended=false;
             v.currentTime=0;
@@ -620,16 +625,36 @@ footer { background: var(--black-2); padding: 44px 56px; display: flex; justify-
             bar.style.width='0%';
             controls.style.opacity='0';
           }
-          document.getElementById('sfReplay').addEventListener('click',function(){
-            endScreen.style.display='none';
-            resetVideo();
+
+          function showEndScreen(){
+            if(!ended){
+              ended=true;
+              endScreen.style.display='flex';
+              endScreen.style.flexDirection='column';
+              v.style.opacity='0';
+              // Reset after 10 seconds
+              setTimeout(resetVideo,10000);
+            }
+          }
+
+          v.addEventListener('ended',showEndScreen);
+          v.addEventListener('webkitendfullscreen',function(){
+            if(v.ended||v.currentTime>=v.duration-0.5)showEndScreen();
           });
+          v.addEventListener('timeupdate',function(){
+            if(v.duration){
+              var remaining=v.duration-v.currentTime;
+              if(remaining<=2.5&&!v.paused)showEndScreen();
+              bar.style.width=(v.currentTime/v.duration*100)+'%';
+              timeEl.textContent=fmt(v.currentTime)+' / '+fmt(v.duration);
+            }
+          });
+
+          document.getElementById('sfReplay').addEventListener('click',function(){resetVideo();});
           toggle.addEventListener('click',function(){if(v.paused){v.play();}else{v.pause();}});
-          v.addEventListener('play',function(){pauseIcon.style.display='block';playIcon.style.display='none';controls.style.opacity='1';});
-          v.addEventListener('pause',function(){pauseIcon.style.display='none';playIcon.style.display='block';});
+          v.addEventListener('play',function(){pauseIcon.style.display='block';playIcon.style.display='none';});
+          v.addEventListener('pause',function(){pauseIcon.style.display='none';playIcon.style.display='block';controls.style.opacity='1';clearTimeout(controlsTimer);});
           progress.addEventListener('click',function(e){var rect=progress.getBoundingClientRect();var pct=(e.clientX-rect.left)/rect.width;v.currentTime=pct*v.duration;});
-          wrap.addEventListener('mouseenter',function(){if(!v.paused||v.currentTime>0)controls.style.opacity='1';});
-          wrap.addEventListener('mouseleave',function(){controls.style.opacity='0';});
         })();
       </script>
     </div>
