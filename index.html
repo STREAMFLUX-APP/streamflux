@@ -510,7 +510,12 @@ footer { background: var(--black-2); padding: 44px 56px; display: flex; justify-
   </div>
   <div class="hero-video-wrap">
     <div class="hero-video-inner">
-      <iframe width="560" height="315" src="https://www.youtube.com/embed/NGblObBmx3s?si=YIMROoLrQkCXwLBB" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+      <video id="sfVideo" style="width:100%;height:100%;position:absolute;top:0;left:0;border-radius:12px;background:#000;outline:none;" poster="" preload="metadata">
+        <source src="https://res.cloudinary.com/delqqntjq/video/upload/v1779978801/STREAMFLUX_VIDEO_2_qy9jhm.mov" type="video/mp4">
+      </video>
+      <div id="sfPlayBtn" onclick="var v=document.getElementById('sfVideo');v.play();document.getElementById('sfPlayBtn').style.display='none';" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:72px;height:72px;background:#2AB8D4;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10;box-shadow:0 0 32px rgba(42,184,212,0.5);transition:transform 0.2s;" onmouseover="this.style.transform='translate(-50%,-50%) scale(1.1)'" onmouseout="this.style.transform='translate(-50%,-50%) scale(1)'">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="#080808"><polygon points="5,3 19,12 5,21"/></svg>
+      </div>
     </div>
   </div>
 </section>
