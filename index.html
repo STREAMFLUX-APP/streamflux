@@ -541,12 +541,12 @@ footer { background: var(--black-2); padding: 44px 56px; display: flex; justify-
       <div id="sfPlayBtn" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:76px;height:76px;background:#2AB8D4;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10;box-shadow:0 0 40px rgba(42,184,212,0.6);transition:all 0.2s;">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="#080808" style="margin-left:4px;"><polygon points="5,3 19,12 5,21"/></svg>
       </div>
-      <!-- Controls bar -->
-      <div id="sfControls" style="position:absolute;bottom:0;left:0;right:0;padding:12px 16px;background:linear-gradient(transparent,rgba(0,0,0,0.9));border-radius:0 0 12px 12px;display:flex;flex-direction:column;gap:10px;opacity:0;transition:opacity 0.3s;z-index:9;">
-        <div id="sfProgress" style="width:100%;height:4px;background:rgba(255,255,255,0.15);border-radius:2px;cursor:pointer;position:relative;">
+      <!-- Controls bar — sits higher so it never covers end screen buttons -->
+      <div id="sfControls" style="position:absolute;bottom:0;left:0;right:0;padding:12px 16px 16px;background:linear-gradient(transparent,rgba(0,0,0,0.9));border-radius:0 0 12px 12px;display:flex;flex-direction:column;gap:10px;opacity:0;transition:opacity 0.3s;z-index:9;pointer-events:none;">
+        <div id="sfProgress" style="width:100%;height:4px;background:rgba(255,255,255,0.15);border-radius:2px;cursor:pointer;position:relative;pointer-events:all;">
           <div id="sfBar" style="height:100%;width:0%;background:#2AB8D4;border-radius:2px;pointer-events:none;transition:width 0.1s;"></div>
         </div>
-        <div style="display:flex;align-items:center;gap:12px;">
+        <div style="display:flex;align-items:center;gap:12px;pointer-events:all;">
           <button id="sfToggle" style="background:none;border:none;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;width:20px;height:20px;">
             <svg id="sfPauseIcon" width="16" height="16" viewBox="0 0 24 24" fill="#2AB8D4" style="display:none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
             <svg id="sfPlayIcon" width="16" height="16" viewBox="0 0 24 24" fill="#2AB8D4"><polygon points="5,3 19,12 5,21"/></svg>
@@ -604,10 +604,17 @@ footer { background: var(--black-2); padding: 44px 56px; display: flex; justify-
             }
           });
 
-          // Watch now — start video, user rotates manually to see fullscreen
+          // Watch now — start video then request fullscreen for landscape viewing
           rotateSkip.addEventListener('click',function(){
             rotateMsg.style.display='none';
             startVideo();
+            setTimeout(function(){
+              try{
+                if(v.webkitEnterFullscreen){v.webkitEnterFullscreen();}
+                else if(v.webkitRequestFullscreen){v.webkitRequestFullscreen();}
+                else if(v.requestFullscreen){v.requestFullscreen();}
+              }catch(e){}
+            },500);
           });
 
           bigBtn.addEventListener('mouseover',function(){bigBtn.style.transform='translate(-50%,-50%) scale(1.1)';bigBtn.style.boxShadow='0 0 50px rgba(42,184,212,0.8)';});
@@ -631,10 +638,11 @@ footer { background: var(--black-2); padding: 44px 56px; display: flex; justify-
           function showEndScreen(){
             if(!ended){
               ended=true;
+              controls.style.opacity='0';
+              controls.style.pointerEvents='none';
               endScreen.style.display='flex';
               endScreen.style.flexDirection='column';
               v.style.opacity='0';
-              setTimeout(resetVideo,10000);
             }
           }
 
